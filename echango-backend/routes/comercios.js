@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var mongodb = require('mongodb').MongoClient;
+var mongodb = require('../util/mongo');
 
 require('bluebird').promisifyAll(mongodb);
 
@@ -12,6 +12,8 @@ var comerciosCercanos = function (req, res, next) {
   var i=0;
   var comercios = [];
 
+  // Inicializo lista de posiciones geograficas con sus ID de
+  // comercios cercanos (array vacio).
   for (;;i++) {
   	if (req.query['lat' + i] && req.query['long' + i]) {
   		comercios.push({
@@ -23,49 +25,27 @@ var comerciosCercanos = function (req, res, next) {
   		break;
   }
 
-  var url = 'mongodb://localhost:27017/echango';
-  var dbTrack;
-  mongodb.connectAsync(url).then(function(db){
-    dbTrack = db;
-    console.log('[Comercios cercanos] - Punto origen: [',
-      comercios[0].lat, ' - ', comercios[0].long, '].');        
+  if (!comercios.length)
+    throw new Error('No se especificaron ubicaciones.');
 
-    var collection = require('bluebird').promisifyAll(
-      db.collection('comercios'));
+  // Por cada posicion obtengo los comercios cercanos.
+  comercios.reduce(function(sequence, comercio) {
 
-    return collection.findAsync({
-      ubicacion: {
-        $geoWithin: {
-          $centerSphere : [ 
-            [
-              parseFloat(comercios[0].lat), 
-              parseFloat(comercios[0].long)
-            ] , 1 / 6378.1 
-          ]
-        }
-      }
+    return sequence.then(function() {
+      return mongodb.findComerciosCercanos(comercio.lat, comercio.long, req.query['radio']);
+    }).then(function(resp){
+      comercio.comerciosCercanos = resp;
     });
 
-  }).then(function(res){
-    return res.toArray();
-  }).then(function(docs){
-    var i;
-    console.log('[Comercios cercanos] - Total comercios encontrados: [',
-      docs.length, '].');
+  }, Promise.resolve()).then(function(){  
 
-    if (docs.length){
-      for (i=0; i<docs.length; i++)
-        console.log('[Comercios cercanos] - [', i, '] => [', docs[i]._id, '].');
-    }
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(comercios));
+
   }).catch(function(err){
-    console.log(err);
-  }).then(function(){
-    console.log('Clean Up de la conexion de BD.')
-    dbTrack.close();
+    next(err);
   });
-  
-  res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify(comercios));
+
 }
 
 router.get('/cercanos', comerciosCercanos);
