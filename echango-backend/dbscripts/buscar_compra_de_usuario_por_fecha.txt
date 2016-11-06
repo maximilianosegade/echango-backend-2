@@ -1,0 +1,13 @@
+db.usuarios.aggregate([{
+    $match: {"compras.fecha":"2016/11/05"}
+    },
+    {$project: {
+        usuarios:{$filter:{
+            input: '$compras',
+            as: 'compra', 
+            cond: {
+                $eq: ['$$compra.fecha','2016/11/05']
+            }
+        }
+    }
+]);

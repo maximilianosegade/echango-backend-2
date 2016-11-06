@@ -1,0 +1,26 @@
+db.usuarios.insert([{
+    _id:"maximilianosegade@gmail.com", 
+    score: "0", 
+    compras:[
+        {
+            fecha:"2016/11/05",
+            comercio:"12-1-91",
+            compra_valorizada_lista:"100", 
+            compra_valorizada_final:"80", 
+            cantidad_articulos_total:"2",
+            medio_de_pago_tipo:"Débito", 
+            medio_de_pago_detalle:"Visa-BBVA", 
+            tarjeta_descuento:"Comunidad Coto"
+        },
+        {
+            fecha:"2016/11/04",
+            comercio:"12-1-91",
+            compra_valorizada_lista:"80", 
+            compra_valorizada_final:"64", 
+            cantidad_articulos_total:"2",
+            medio_de_pago_tipo:"Crédito", 
+            medio_de_pago_detalle:"Visa-BBVA", 
+            tarjeta_descuento:"Comunidad Coto"
+        }
+    ]
+}])
