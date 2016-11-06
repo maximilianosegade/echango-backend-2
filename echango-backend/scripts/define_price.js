@@ -24,14 +24,14 @@ var get_connect = new Promise(function(resolve,reject){
 
 get_connect.then(function(db){
 
-	var define_price = new Promise(function(resolve,reject){
+	var search_snap = new Promise(function(resolve,reject){
 
 		var mySnap = db.collection('snapshot_en_curso').find()
 		console.log("Devuelvo conexión a DB y cursor")
 		resolve(mySnap);
 	})
 
-	define_price.then(function(mySnap){
+	search_snap.then(function(mySnap){
 		
 		//Por cada documento de la snapshot en curso (sucursal), verifico cada EAN y calculo el precio_novedad
 		console.log("Por procesar novedades de comercios...")
@@ -47,6 +47,7 @@ get_connect.then(function(db){
 				console.log("No existen registros por precesar.")
 				console.log("Se han procesado las novedades y generado el último snapshot.")
 				console.log("Cerrando conexión a base de datos...")
+				db.close()
 				return Promise.resolve("0");
 
 			} else {
@@ -68,45 +69,23 @@ get_connect.then(function(db){
 				console.log("precio_novedad_denom = ",precio_novedad_denom)
 
 				for (i=0; i<novedades.length; i++){
+					
 					novedad_nro = i+1
+					
+					console.log("Precio de novedad N°",novedad_nro,"= $",novedades[i].precio)
+					console.log("Peso de novedad N°",novedad_nro,"= ",novedades[i].score)
 
-					var get_user_weight = new Promise(function(resolve,reject){
+					console.log("precio_novedad_num ANTES:",precio_novedad_num)
+					precio_novedad_num += novedades[i].precio * novedades[i].score
+					console.log("precio_novedad_num DESPUES:",precio_novedad_num)
+					
+					console.log("precio_novedad_denom ANTES:",precio_novedad_denom)
+					precio_novedad_denom += novedades[i].score
+					console.log("precio_novedad_denom DESPUES:",precio_novedad_denom)
+					}
 
-						var cursor = db.collection('usuarios')
-						console.log("Devuelvo usuario")
-						
-						cursor.findOne({_id:novedades[i].usuario},function(err,usuario){
-							if (err)
-								reject(err)
-
-							console.log("Se obtuvo el usuario:", usuario)
-							resolve(usuario);
-						})						
-					});
-
-					get_user_weight.then(function(usuario){
-
-						console.log("Usuario:",usuario)
-						peso_novedad = usuario.score
-
-						resolve(peso_novedad)
-					}.then(function(peso_novedad){
-						console.log("Precio de novedad N°",novedad_nro,"= $",novedades[i].precio)
-						console.log("Peso de novedad N°",novedad_nro,"= ",peso_novedad)
-
-						console.log("precio_novedad_num ANTES:",precio_novedad_num)
-						precio_novedad_num += novedades[i].precio * peso_novedad
-						console.log("precio_novedad_num DESPUES:",precio_novedad_num)
-						
-						console.log("precio_novedad_denom ANTES:",precio_novedad_denom)
-						precio_novedad_denom += peso_novedad
-						console.log("precio_novedad_denom DESPUES:",precio_novedad_denom)
-					}))
-				}
 				var precio_novedad = precio_novedad_num / precio_novedad_denom
 				console.log("Precio novedad: $",precio_novedad)
-
-				db.close()
 
 				//NO BORRAR ----
 				/*var keys = Object.keys(comercio)
