@@ -62,12 +62,12 @@ get_connect.then(function(db){
 					console.log("No existen registros por precesar.")
 					console.log("AHORA SI GRABO",usuarios)
 
-					db.collection('usuarios').update({_id:usuarios._id},[usuarios],{w:1 , multi:true}, function(err,numberUpdated){
+					/*db.collection('usuarios').update({_id:usuarios._id},[usuarios],{w:1 , multi:true}, function(err,numberUpdated){
 						assert.equal(null,err)
 						assert.equal(2,numberUpdated);
-					})
+					})*/
 
-					console.log("Se actualizadon: ", numberUpdated)
+					//console.log("Se actualizadon: ", numberUpdated)
 					console.log("Se han procesado las novedades y generado el último snapshot.")
 					console.log("Cerrando conexión a base de datos...")
 					db.close()
