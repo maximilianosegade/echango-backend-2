@@ -98,7 +98,8 @@ get_connect.then(function(db){
 						console.log("precio_novedad_denom DESPUES:",precio_novedad_denom)
 						}
 
-					var precio_novedad = precio_novedad_num / precio_novedad_denom
+					var precio_novedad = parseFloat(precio_novedad_num / precio_novedad_denom).toFixed(2)
+
 					console.log("Precio novedad: $",precio_novedad)
 					comercio[ean].precio_novedad = precio_novedad
 					console.log("Precio guardado: $",comercio[ean].precio_novedad);
