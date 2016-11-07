@@ -51,6 +51,8 @@ var id= '2016-11-06 00:59:12';
 var snapComercios = {};
 var usuarios = [];
 var comercios = [];
+var scores,
+	preciosBase;
 
 // obtener compras hist.
 obtenerComprasHistoricoPorId(id).then(function(compras){
@@ -138,9 +140,10 @@ obtenerComprasHistoricoPorId(id).then(function(compras){
 
 	});
 
-}).then(function(scores){
+}).then(function(scoresObtenidos){
 
-	console.log('Scores obtenidos: ', scores);
+	console.log('Scores obtenidos: ', scoresObtenidos);
+	scores = scoresObtenidos;
 
 	return new Promise(function(resolve, reject){
 
@@ -159,7 +162,7 @@ obtenerComprasHistoricoPorId(id).then(function(compras){
 			console.log('Conexion a DB exitosa.');
 			console.log('Buscar en tabla ultima_snapshot...');
 
-		    db.collection('ultima_snapshot').find({'_id': {'$in': usuarios}, 'precios': {}},{_id:1, score:1}).toArray(function(err, result){
+		    db.collection('ultima_snapshot').find({'_id': {'$in': comercios}}).toArray(function(err, result){
 		    	if (err){
 		    		if (dbTrack){
 						dbTrack.close();
@@ -179,18 +182,87 @@ obtenerComprasHistoricoPorId(id).then(function(compras){
 
 	});
 
+}).then(function(precios){
+	var i,
+		j,
+		k;
+	var insertDocs = [];
+
+	console.log('Precios obtenidos OK.');
+	preciosBase = precios;
+
+	console.log('Se van a cargar los precios base y los score de usuario desde el ultimo snapshot.');
+
+	for (i=0; i<comercios.length; i++){
+		for (prop in snapComercios[comercios[i]]){
+			if (/^\d+$/.test(prop)){
+				
+				// Setear precio base.
+				for (j=0; j<preciosBase.length; j++){
+										
+					if (preciosBase[j]._id === comercios[i]){
+						snapComercios[comercios[i]][prop].preciosBase = preciosBase[j].precios[prop];
+						break;
+					}
+				}
+
+				// Setear scores de usuario.
+				for (j=0; j<snapComercios[comercios[i]][prop].novedades.length; j++){
+											
+					for (k=0; k<scores.length; k++){
+						
+						if (scores[k]._id === snapComercios[comercios[i]][prop].novedades[j].usuario){
+							snapComercios[comercios[i]][prop].novedades[j].score = scores[k].score;
+							break;
+						}
+
+					}
+				}
+
+			}
+		}
+	}
+
+	console.log('Precios base y score cargados OK.');
+
+	for (prop in snapComercios){
+		insertDocs.push(snapComercios[prop]);
+	}
+	
+	console.log('Snapshot generado: ', JSON.stringify(insertDocs));
+
+	var MongoClient = require('mongodb').MongoClient;	
+	MongoClient.connect(mongoUrl, function(err, db) {
+		dbTrack = db;
+
+		if (err){
+			if (dbTrack){
+				dbTrack.close();
+			}
+			console.log('Error connect', err);
+			return Promise.reject(err);
+		}
+
+	    db.collection('snapshot_en_curso').insertMany(insertDocs, function(err, result){
+	    	if (err){
+	    		if (dbTrack){
+					dbTrack.close();
+				}
+	    		console.log('Error insert', err);
+	    		return Promise.reject(err);
+	    	}
+	    	
+	    	console.log('Snapshots actualizados en DB.');
+
+	    	if (dbTrack){
+				dbTrack.close();
+			}
+	    	return Promise.resolve(result);
+	    });
+	});
 
 }).catch(function(err){
 
 	console.log('Fallo la generacion de snapshot en curso para [', id, ']. ', err);
 
-})
-
-// por cada comercio:
-
-	// armar snap base por comercio.
-
-	// actualizar precios base segun ultimo snapshot.
-
-	// actualizar score users segun tabla usuarios.
-
+});
