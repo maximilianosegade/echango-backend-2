@@ -7,12 +7,6 @@ var _ = require('underscore');
 var assert = require('assert');
 var precio_base_weight = 1000;
 
-// Obtener novedades de CouchDB (novedades_subida)
-var fechaHoy = new Date().toISOString()
-  .replace(/T/, ' ')		// replace T with a space
-  .replace(/\..+/, '');     // delete the dot and everything after
-
-
 var get_connect = new Promise(function(resolve,reject){
 
 	MongoClient.connect(mongoUrl, function(err, db) {
@@ -26,17 +20,6 @@ var get_connect = new Promise(function(resolve,reject){
 
 get_connect.then(function(db){
 	
-	var get_usuarios = new Promise (function(resolve,reject){
-
-		db.collection('usuarios').find().toArray(function(err,result){
-			if (err){
-				reject(err)
-			}
-
-			resolve(result);
-		})
-	});
-
 	var search_snap = new Promise(function(resolve,reject){
 
 		var mySnap = db.collection('snapshot_en_curso').find()
@@ -44,112 +27,165 @@ get_connect.then(function(db){
 		resolve(mySnap);
 	});
 
-	get_usuarios.then(function(usuarios){
+	search_snap.then(function(mySnap){
+		
+		//Por cada documento de la snapshot en curso (sucursal), verifico cada EAN y calculo el precio_novedad
+		console.log("Por procesar novedades de comercios...")
 
-		search_snap.then(function(mySnap){
-			
-			//Por cada documento de la snapshot en curso (sucursal), verifico cada EAN y calculo el precio_novedad
-			console.log("Por procesar novedades de comercios...")
+		/*console.log("mySnap tipo: ",typeof mySnap)
 
-			mySnap.each(function(err,comercio){
-				if (err){
-					console.log('Error en forEach',err)
-					return Promise.reject(err);
+		var mySnap_keys = Object.keys(mySnap)
+		console.log("Keys de mySnap ", mySnap_keys)
+
+		var mySnap_lenght = mySnap_keys.length()
+		console.loh("Cantidad :",mySnap_lenght)
+		*/
+
+		var v_cant_suc = 0	
+		var usuarios = []
+
+		mySnap.each(function(err,comercio){
+			if (err){
+				console.log('Error en each',err)
+				return Promise.reject(err);
+			}
+
+			v_cant_suc++
+
+			if (comercio == null) {
+
+				console.log("No existen registros por precesar.")
+				console.log("Se procesaron: ",v_cant_suc," sucursales.")
+				console.log("AHORA SI GRABO")//,usuarios)
+
+				var usr_keys = Object.keys(usuarios)
+
+				console.log("Largo:",usr_keys.length)
+				console.log("Keys:",usr_keys)
+
+				for (u=0; u<usr_keys.length; u++) {
+
+					console.log("Grabo usuario: ",usr_keys[u])
+					console.log("Su score es: ",usuarios[usr_keys[u]])	
+					db.collection('usuarios').update({_id:usr_keys[u]},{$set: {score:usuarios[usr_keys[u]]}})
 				}
 
-				if (comercio == null) {
+				//console.log("Se actualizadon: ", numberUpdated)
+				
+				console.log("Se han procesado las novedades y generado el último snapshot.")
+				console.log("Cerrando conexión a base de datos...")
+				db.close()
+				return;
+			} else {
 
-					console.log("No existen registros por precesar.")
-					console.log("AHORA SI GRABO",usuarios)
+				//Informo el comercio a procesar
+				console.log("PROCESANDO NUEVO COMERCIO -------------------------------------")
+				console.log("Procesando comercio:",comercio._id)					
+				
+				//Obtengo un array con todos los _id de los EAN que tienen novedades para el comercio
+				var keys = Object.keys(comercio)
 
-					/*db.collection('usuarios').update({_id:usuarios._id},[usuarios],{w:1 , multi:true}, function(err,numberUpdated){
-						assert.equal(null,err)
-						assert.equal(2,numberUpdated);
-					})*/
+				//Imprimo el array para ver los EAN con novedades
+				console.log(keys)
 
-					//console.log("Se actualizadon: ", numberUpdated)
-					console.log("Se han procesado las novedades y generado el último snapshot.")
-					console.log("Cerrando conexión a base de datos...")
-					db.close()
-					return;
+				//Arranco de la posición "e=1" porque la posición 0 contiene el _id del comercio
+				//Comienzo a recorrer todos los EAN con novedades
+				for (e=1; e<keys.length; e++){
 
-				} else {
-
-					console.log("Comercio:",comercio)					
-					var keys = Object.keys(comercio)
-					console.log(keys)
+					//Asigno el EAN a recorrer
+					var ean = keys[e]
 					
-					for (e=1; e<keys.length; e++){
+					//No debería pasar, pero en caso que el EAN sea nulo, significa que no tengo más registros para procesar y retorno
+					if (ean == null){
+						console.log("No existen artículos para procesar en el comercio: ",comercio._id)
+						return;
+					}
 
-						var ean = keys[e]
+					console.log("PROCESANDO NUEVO EAN -------------------------------------")
+					
+					//Informo qué EAN estoy procesando
+					console.log("Proceso EAN:",ean)
+
+					//Imprimo el objeto EAN asignado
+					console.log("EAN:",comercio[ean])
+
+					//Muestro el precio novedad definido para dicho EAN en "Define_price"
+					console.log("Precio guardado: $",comercio[ean].precio_novedad)
+					var nvd = comercio[ean].precio_novedad
+
+					//Asigno el array de novedades a la variable novedades, la cual comienzo a recorrer desde la primer novedad
+					var novedades = comercio[ean].novedades
+
+					//Informo la cantidad de novedades para el EAN
+					console.log("Se procesarán ",novedades.length," novedades...")
+					
+					for (i=0; i<novedades.length; i++){
 						
-						console.log("Proceso EAN:",ean)
-						if (ean == null){
-							console.log("No existen artículos para procesar en el comercio: ",comercio._id)
-							return;
+						//Identifico la novedad comenzando por la 1 (por eso le sumo 1)
+						novedad_nro = i+1
+
+						console.log("Proceso usuario de novedad N°",novedad_nro)
+						
+						console.log("Usuario: ",novedades[i].usuario)
+						var usr = novedades[i].usuario
+
+						console.log("Precio informado por el usuario: $",novedades[i].precio)
+						var prc = novedades[i].precio
+
+						console.log("El usuario informó el precio con un score de: ",novedades[i].score)
+						var scr = novedades[i].score
+
+						//Verifico si el usuario existe en el array de usuarios de novedades
+						//Si no existe deberé asignarle una posición
+						//Si existe, deberé sumar los puntos que ha obtenido en esta novedad a los puntos de array
+						var usr_exist = _.has(usuarios,usr)
+						if (usr_exist == true) {
+							
+							console.log("Usuario existente:",usr)
+
+						} else {
+
+							usuarios[usr]=scr
+
+							console.log("Se ha agregado un usuario a la lista: ",usr)
+							console.log("Imprimo lista actualizada: ", usuarios)
 						}
 
-						console.log("EAN:",comercio[ean])
-						console.log("Registro:")
-			
-						console.log("Precio guardado: $",comercio[ean].precio_novedad)
-						var novedades = comercio[ean].novedades
+						console.log("El usuario tiene actualmente un score =",usuarios[usr])
 
-						for (i=0; i<novedades.length; i++){
-							
-							novedad_nro = i+1
-							var nvd = comercio[ean].precio_novedad
+						if (nvd >= prc) {
 
-							console.log("Proceso usuario de novedad")
+							var diferencia = nvd - prc
+							var porcentaje = parseFloat((diferencia / nvd) * 100).toFixed(2)
 
-							console.log("Precio de novedad N°",novedad_nro,"= $",novedades[i].precio)
-							var prc = novedades[i].precio
+						} else {
 
-							console.log("Usuario de novedad N°",novedad_nro,"= ",novedades[i].usuario)
-							
-							var usuario = _.findWhere(usuarios,{_id : novedades[i].usuario})
-							console.log("Se encontró el usuario: ",usuario)
-
-							var usr_key = _.findKey(usuarios,{_id : novedades[i].usuario})
-							console.log("La KEY es: ",usr_key,"Tipo:",typeof usr_key)//,"Entonces:...",usuarios[usr_key].score)
-
-							scr = usuario.score
-							console.log("Score es: ",scr,"de tipo:",typeof scr)
-
-							if (nvd >= prc) {
-
-								var diferencia = nvd - prc
-								var porcentaje = parseFloat((diferencia / nvd) * 100).toFixed(2)
-
-							} else {
-
-								var diferencia = prc - nvd
-								var porcentaje = parseFloat((diferencia / nvd) * 100).toFixed(2)
-							
-							}
-
-							console.log("El porcentaje de desvío es: %",porcentaje)
-
-							if (porcentaje <= 1.00) { var nuevo_score = parseFloat(scr) + 100 } else
-							if (porcentaje <= 3.00) { var nuevo_score = parseFloat(scr) + 70 } else
-							if (porcentaje <= 5.00) { var nuevo_score = parseFloat(scr) + 50 } else
-							if (porcentaje <= 10.00) { var nuevo_score = parseFloat(scr) + 20 } else
-							if (porcentaje <= 20.00) { var nuevo_score = parseFloat(scr) + 5 } else
-							if (porcentaje <= 30.00) { var nuevo_score = parseFloat(scr) - 100 } else
-							if (porcentaje <= 50.00) { var nuevo_score = parseFloat(scr) - 500 } else
-							if (porcentaje <= 100.00) { var nuevo_score = parseFloat(scr) - 1500 } else 
-								{var nuevo_score = parseFloat(scr) - 3000};
-
-							console.log("El nuevo score del usuario: ",novedades[i].usuario," es = ",nuevo_score);
-
-							usuarios[usr_key].score = nuevo_score
-
-							console.log("Se grabó el nuevo score: ", usuarios[usr_key].score)
-							console.log("Score guardado.")
+							var diferencia = prc - nvd
+							var porcentaje = parseFloat((diferencia / nvd) * 100).toFixed(2)
+						
 						}
+
+						console.log("El porcentaje de desvío es: %",porcentaje)
+
+						if (porcentaje <= 1.00) { var add_score = 100 } else
+						if (porcentaje <= 3.00) { var add_score = 70 } else
+						if (porcentaje <= 5.00) { var add_score = 50 } else
+						if (porcentaje <= 10.00) { var add_score = 20 } else
+						if (porcentaje <= 20.00) { var add_score = 5 } else
+						if (porcentaje <= 30.00) { var add_score = -100 } else
+						if (porcentaje <= 50.00) { var add_score = -500 } else
+						if (porcentaje <= 100.00) { var add_score = -1500 } else 
+							{var add_score = parseFloat(scr) - 3000};
+
+						console.log("El score adicional que le corresponde al usuario: ",usr," es = ",add_score);
+
+						usuarios[usr] = parseFloat(usuarios[usr]) + parseFloat(add_score)
+
+						console.log("Se guardó el score final: ",usuarios[usr])	
+						console.log("Imprimo lista actualizada: ", usuarios)				
 					}	
 				}
-			})
+			}
 		})
 	}).catch(function(err){console.log(err)})
 }).catch(function(err){console.log(err)})
