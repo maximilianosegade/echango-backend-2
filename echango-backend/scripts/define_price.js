@@ -5,12 +5,6 @@ var mongoUrl = 'mongodb://echango_mobile:aprobamos el 22/11@ec2-35-162-193-58.us
 //var ean = "7790895000997";
 var precio_base_weight = 1000;
 
-// Obtener novedades de CouchDB (novedades_subida)
-var fechaHoy = new Date().toISOString()
-  .replace(/T/, ' ')		// replace T with a space
-  .replace(/\..+/, '');     // delete the dot and everything after
-
-
 var get_connect = new Promise(function(resolve,reject){
 
 	MongoClient.connect(mongoUrl, function(err, db) {
@@ -36,6 +30,7 @@ get_connect.then(function(db){
 		//Por cada documento de la snapshot en curso (sucursal), verifico cada EAN y calculo el precio_novedad
 		console.log("Por procesar novedades de comercios...")
 
+		//Pocesa el "doc:comercio" y en el último each donde "doc:comercio" es nulo, termina de procesar
 		mySnap.each(function(err,comercio){
 			if (err){
 				console.log('Error en forEach',err)
@@ -89,14 +84,22 @@ get_connect.then(function(db){
 						console.log("Precio de novedad N°",novedad_nro,"= $",novedades[i].precio)
 						console.log("Peso de novedad N°",novedad_nro,"= ",novedades[i].score)
 
-						console.log("precio_novedad_num ANTES:",precio_novedad_num)
-						precio_novedad_num += novedades[i].precio * novedades[i].score
-						console.log("precio_novedad_num DESPUES:",precio_novedad_num)
+						if (novedades[i].score >= 0){
+							
+							console.log("precio_novedad_num ANTES:",precio_novedad_num)
+							precio_novedad_num += novedades[i].precio * novedades[i].score
+							console.log("precio_novedad_num DESPUES:",precio_novedad_num)
+							
+							console.log("precio_novedad_denom ANTES:",precio_novedad_denom)
+							precio_novedad_denom += parseFloat(novedades[i].score)
+							console.log("precio_novedad_denom DESPUES:",precio_novedad_denom)
+
+						} else {
+
+							console.log("Usuario no participa de cálculo de precio")
 						
-						console.log("precio_novedad_denom ANTES:",precio_novedad_denom)
-						precio_novedad_denom += parseFloat(novedades[i].score)
-						console.log("precio_novedad_denom DESPUES:",precio_novedad_denom)
 						}
+					}
 
 					var precio_novedad = parseFloat(precio_novedad_num / precio_novedad_denom).toFixed(2)
 
