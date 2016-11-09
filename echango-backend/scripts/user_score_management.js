@@ -5,7 +5,6 @@ var mongoUrl = 'mongodb://echango_mobile:aprobamos el 22/11@ec2-35-162-193-58.us
 //var ean = "7790895000997";
 var _ = require('underscore');
 var assert = require('assert');
-var precio_base_weight = 1000;
 
 var get_connect = new Promise(function(resolve,reject){
 
@@ -32,15 +31,6 @@ get_connect.then(function(db){
 		//Por cada documento de la snapshot en curso (sucursal), verifico cada EAN y calculo el precio_novedad
 		console.log("Por procesar novedades de comercios...")
 
-		/*console.log("mySnap tipo: ",typeof mySnap)
-
-		var mySnap_keys = Object.keys(mySnap)
-		console.log("Keys de mySnap ", mySnap_keys)
-
-		var mySnap_lenght = mySnap_keys.length()
-		console.loh("Cantidad :",mySnap_lenght)
-		*/
-
 		var v_cant_suc = 0	
 		var usuarios = []
 
@@ -52,6 +42,7 @@ get_connect.then(function(db){
 
 			v_cant_suc++
 
+			//Pocesa el "doc:comercio" y en el último each donde "doc:comercio" es nulo, termina de procesar
 			if (comercio == null) {
 
 				console.log("No existen registros por precesar.")
@@ -66,11 +57,22 @@ get_connect.then(function(db){
 				for (u=0; u<usr_keys.length; u++) {
 
 					console.log("Grabo usuario: ",usr_keys[u])
-					console.log("Su score es: ",usuarios[usr_keys[u]])	
-					db.collection('usuarios').update({_id:usr_keys[u]},{$set: {score:usuarios[usr_keys[u]]}})
-				}
+					console.log("Su score es: ",usuarios[usr_keys[u]])
 
-				//console.log("Se actualizadon: ", numberUpdated)
+					if (usuarios[usr_keys[u]] < 1000.00) { var usr_weight = 1 } else
+					if (usuarios[usr_keys[u]] < 10000.00) { var usr_weight = 10 } else
+					if (usuarios[usr_keys[u]] < 25000.00) { var usr_weight = 50 } else
+					if (usuarios[usr_keys[u]] < 100000.00) { var usr_weight = 150 } else
+						{ var usr_weight = 450 }
+
+					if (usuarios[usr_keys[u]] < 1000.00) { var usr_weight_det = "Chango Vacío" } else
+					if (usuarios[usr_keys[u]] < 10000.00) { var usr_weight_det = "Mini Chango" } else
+					if (usuarios[usr_keys[u]] < 25000.00) { var usr_weight_det = "Chango" } else
+					if (usuarios[usr_keys[u]] < 100000.00) { var usr_weight_det = "Chango Lleno" } else
+						{ var usr_weight_det = "Super Chango" }
+
+					db.collection('usuarios').update({_id:usr_keys[u]},{$set: {score:usuarios[usr_keys[u]], weight:usr_weight,chango_type: usr_weight_det}})
+				}
 				
 				console.log("Se han procesado las novedades y generado el último snapshot.")
 				console.log("Cerrando conexión a base de datos...")
@@ -139,6 +141,7 @@ get_connect.then(function(db){
 						//Si no existe deberé asignarle una posición
 						//Si existe, deberé sumar los puntos que ha obtenido en esta novedad a los puntos de array
 						var usr_exist = _.has(usuarios,usr)
+
 						if (usr_exist == true) {
 							
 							console.log("Usuario existente:",usr)
@@ -153,17 +156,14 @@ get_connect.then(function(db){
 
 						console.log("El usuario tiene actualmente un score =",usuarios[usr])
 
+						//Calculo el porcentaje de diferencia con respecto a la novedad calculada
 						if (nvd >= prc) {
-
 							var diferencia = nvd - prc
-							var porcentaje = parseFloat((diferencia / nvd) * 100).toFixed(2)
-
 						} else {
-
 							var diferencia = prc - nvd
-							var porcentaje = parseFloat((diferencia / nvd) * 100).toFixed(2)
-						
 						}
+
+						var porcentaje = parseFloat((diferencia / nvd) * 100).toFixed(2)
 
 						console.log("El porcentaje de desvío es: %",porcentaje)
 
@@ -175,7 +175,7 @@ get_connect.then(function(db){
 						if (porcentaje <= 30.00) { var add_score = -100 } else
 						if (porcentaje <= 50.00) { var add_score = -500 } else
 						if (porcentaje <= 100.00) { var add_score = -1500 } else 
-							{var add_score = parseFloat(scr) - 3000};
+							{var add_score = - 3000};
 
 						console.log("El score adicional que le corresponde al usuario: ",usr," es = ",add_score);
 
