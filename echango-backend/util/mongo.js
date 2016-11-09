@@ -3,7 +3,8 @@ const radioDefaultMts = 500
 
 var mongodb = require('mongodb').MongoClient;
 
-require('bluebird').promisifyAll(mongodb);
+var bluebird = require('bluebird');
+bluebird.promisifyAll(mongodb);
 
 var dbutils = {};
 
@@ -87,5 +88,46 @@ dbutils.findComerciosCercanos = function(lat, long, radio){
 	});
 }
 
-//module.exports = dbutils;
-dbutils.findComerciosCercanos(-34.602232,-58.411533,0)
+dbutils.find = function(collectionName, selector){
+	var dbTrack;
+
+	return dbutils.connect().then(function(db){   
+    	dbTrack = db;   
+
+    	var collection = bluebird.promisifyAll(
+      		db.collection(collectionName));
+
+    	return collection.find(selector);
+  	}).then(function(res){
+  		var data = res.toArray();
+  		dbutils.cleanDB(dbTrack);
+    	return data;
+  	}).catch(function(err){
+  		dbutils.cleanDB(dbTrack);
+  		return Promise.reject(err);
+  	});
+
+}
+
+dbutils.update = function(collectionName, s1, s2, s3){
+	var dbTrack;
+
+	return dbutils.connect().then(function(db){   
+    	dbTrack = db;   
+
+    	var collection = bluebird.promisifyAll(
+      		db.collection(collectionName));
+
+    	return collection.updateAsync(s1, s2, s3);
+  	}).then(function(res){
+  		dbutils.cleanDB(dbTrack);
+    	return res;
+  	}).catch(function(err){
+  		dbutils.cleanDB(dbTrack);
+  		return Promise.reject(err);
+  	});
+
+}
+
+module.exports = dbutils;
+//dbutils.findComerciosCercanos(-34.602232,-58.411533,0)
