@@ -172,9 +172,9 @@ get_connect.then(function(db){
 						if (porcentaje <= 5.00) { var add_score = 50 } else
 						if (porcentaje <= 10.00) { var add_score = 20 } else
 						if (porcentaje <= 20.00) { var add_score = 5 } else
-						if (porcentaje <= 30.00) { var add_score = -100 } else
-						if (porcentaje <= 50.00) { var add_score = -500 } else
-						if (porcentaje <= 100.00) { var add_score = -1500 } else 
+						if (porcentaje <= 30.00) { var add_score = -10 } else
+						if (porcentaje <= 50.00) { var add_score = -200 } else
+						if (porcentaje <= 100.00) { var add_score = -1050 } else 
 							{var add_score = - 3000};
 
 						console.log("El score adicional que le corresponde al usuario: ",usr," es = ",add_score);

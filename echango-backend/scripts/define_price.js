@@ -3,7 +3,7 @@ var util = require('util');
 var MongoClient = require('mongodb').MongoClient;	
 var mongoUrl = 'mongodb://echango_mobile:aprobamos el 22/11@ec2-35-162-193-58.us-west-2.compute.amazonaws.com:38128/echango';
 //var ean = "7790895000997";
-var precio_base_weight = 1000;
+var precio_base_weight = 10000;
 
 var get_connect = new Promise(function(resolve,reject){
 
