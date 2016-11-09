@@ -86,6 +86,16 @@ get_connect.then(function(db){
 					console.log("Imprimo novedades del artículo:")
 					console.log(novedades)
 					
+					var novedades_nro = 0
+
+					var precio_novedad_num = 0
+					var precio_novedad_denom = 0
+					
+					var cant_chango_lleno = 0
+					var prc_chango_lleno = 0
+					var cant_chango = 0
+					var prc_chango = 0
+					
 					//El precio base existe si es TRUE
 					if (comercio[ean].precio_base) {
 
@@ -106,15 +116,6 @@ get_connect.then(function(db){
 					}
 						
 					console.log("1 - excluir_precio_base =",excluir_precio_base)
-					var novedades_nro = 0
-
-					var precio_novedad_num = 0
-					var precio_novedad_denom = 0
-					
-					var cant_chango_lleno = 0
-					var prc_chango_lleno = 0
-					var cant_chango = 0
-					var prc_chango = 0
 
 					for (i=0; i<novedades.length; i++){
 
