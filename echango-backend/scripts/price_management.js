@@ -7,7 +7,7 @@ var fechaHoy = new Date().toISOString()
 
 var hostNovedades = 'webi.certant.com';
 //var pathNovedades = '/echango/novedades_subida/_design/_view/_view/_compra_por_dia?descending=true&endkey=%22'+fechaHoy+'%22';
-var pathNovedades = '/echango/novedades_subida/_design/_view/_view/_compra_por_dia?descending=true&endkey=%222016/11/04%22';
+var pathNovedades = '/echango/novedades_subida/_design/_view/_view/_compra_por_dia?descending=true&endkey=%222016-11-05%22';
 var mongoUrl = 'mongodb://echango_mobile:aprobamos el 22/11@ec2-35-162-193-58.us-west-2.compute.amazonaws.com:38128/echango';
 
 var options = {
