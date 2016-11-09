@@ -44,14 +44,14 @@ obtenerNovedades.then(function(resp){
 	var i;
 	var snapshot = {
 		_id: fechaHoy,
-		data: []
+		compras: []
 	};
 
 	console.log('Se obtuvieron las novedades de precios.');
 	console.log('Se va a persistir el snapshot en historico...');
 	
 	for (i=0; i<resp.length; i++){
-		snapshot.data.push(resp[i].value);
+		snapshot.compras.push(resp[i].value);
 	}
 
 	var MongoClient = require('mongodb').MongoClient;	
