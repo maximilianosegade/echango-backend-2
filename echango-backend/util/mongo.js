@@ -1,5 +1,5 @@
-const url = 'mongodb://localhost:27017/echango';
-const radioDefaultKms = 0.5
+var mongoUrl = 'mongodb://echango_mobile:aprobamos el 22/11@ec2-35-162-193-58.us-west-2.compute.amazonaws.com:38128/echango';
+const radioDefaultMts = 500
 
 var mongodb = require('mongodb').MongoClient;
 
@@ -14,7 +14,7 @@ dbutils.cleanDB = function(db){
 }
 
 dbutils.connect = function(){
-	return mongodb.connectAsync(url);
+	return mongodb.connectAsync(mongoUrl);
 }
 
 dbutils.findComerciosCercanos = function(lat, long, radio){
@@ -30,7 +30,7 @@ dbutils.findComerciosCercanos = function(lat, long, radio){
     	var collection = require('bluebird').promisifyAll(
       		db.collection('comercios'));
 
-    	return collection.findAsync({
+    	/*return collection.findAsync({
       		ubicacion: {
 	        $geoWithin: {
 	          $centerSphere : [ 
@@ -41,7 +41,20 @@ dbutils.findComerciosCercanos = function(lat, long, radio){
 	          ]
 	        }
 	      }
-	    });
+	    });*/
+	    return collection.aggregate([
+	    {
+	    	$geoNear: {
+	          	near: { type: "Point", coordinates: [-34.602232, -58.411533]} ,
+        		distanceField: "dist.calculated",
+        		maxDistance: radioDefaultMts,
+        		distanceMultiplier: 1.2,
+        		//query: {cadena : "DIA"},
+        		includeLocs: "dist.location",
+        		spherical: true
+	        }
+	    }
+	    ]);
 
   	}).then(function(res){
 
@@ -57,7 +70,8 @@ dbutils.findComerciosCercanos = function(lat, long, radio){
 
 	    if (docs.length){
 	    	for (i=0; i<docs.length; i++){
-	      		console.log('[Comercios cercanos] - [', i, '] => [', docs[i]._id, '].');
+	      		console.log('[Comercios cercanos] - [', i, '] => [', docs[i]._id, '], distancia:',
+	      			parseFloat(docs[i].dist.calculated).toFixed(2),"metros.");
 	    		comercios.push(docs[i]._id);
 	    	}
 	    }
@@ -73,4 +87,5 @@ dbutils.findComerciosCercanos = function(lat, long, radio){
 	});
 }
 
-module.exports = dbutils;
+//module.exports = dbutils;
+dbutils.findComerciosCercanos(-34.602232,-58.411533,0)
