@@ -38,7 +38,7 @@ function obtenerComprasHistoricoPorId(id){
 				if (!result.length)
 					reject(new Error('No se encontro el documento con las compras historicas.'))
 				else
-					resolve(result[0].data);
+					resolve(result[0].compras);
 		    });
 		});
 
@@ -47,7 +47,7 @@ function obtenerComprasHistoricoPorId(id){
 }
 
 
-var id= '2016-11-06 00:59:12';
+var id= '2016-11-09 03:25:51';
 var snapComercios = {};
 var usuarios = [];
 var comercios = [];
@@ -201,7 +201,7 @@ obtenerComprasHistoricoPorId(id).then(function(compras){
 				for (j=0; j<preciosBase.length; j++){
 										
 					if (preciosBase[j]._id === comercios[i]){
-						snapComercios[comercios[i]][prop].preciosBase = preciosBase[j].precios[prop];
+						snapComercios[comercios[i]][prop].precio_base = preciosBase[j].precios[prop];
 						break;
 					}
 				}
