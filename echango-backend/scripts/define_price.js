@@ -107,13 +107,16 @@ get_connect.then(function(db){
 						
 					console.log("1 - excluir_precio_base =",excluir_precio_base)
 					var novedades_nro = 0
-					
-					for (i=0; i<novedades.length; i++){
 
-						var cant_chango_lleno = 0
-						var prc_chango_lleno = 0
-						var cant_chango = 0
-						var prc_chango = 0
+					var precio_novedad_num = 0
+					var precio_novedad_denom = 0
+					
+					var cant_chango_lleno = 0
+					var prc_chango_lleno = 0
+					var cant_chango = 0
+					var prc_chango = 0
+
+					for (i=0; i<novedades.length; i++){
 
 						novedad_nro = i+1						
 						
