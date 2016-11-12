@@ -47,13 +47,14 @@ get_connect.then(function(db){
 					return Promise.reject(err);
 				}
 
-				if (typeof comercio == 'undefined' || comercio == null) {
-
+				if (comercio == null) {
+					
 					console.log("No existen registros por precesar.")
 					console.log("Se han procesado las novedades y generado el último snapshot.")
 					console.log("Cerrando conexión a base de datos...")
 					db.close()
 					return;
+					
 
 				} else {
 
@@ -61,6 +62,7 @@ get_connect.then(function(db){
 					console.log("PROCESANDO NUEVO COMERCIO -------------------------------------")
 					//console.log("Procesando comercio:",comercio._id)
 					
+					console.log("Comercio:", comercio)
 					//Obtengo un array con todos los _id de los EAN que tienen novedades para el comercio
 					var keys = Object.keys(comercio.precios)
 
@@ -83,50 +85,41 @@ get_connect.then(function(db){
 					//Arranco de la posición "e=1" porque la posición 0 contiene el _id del comercio
 					//Comienzo a recorrer todos los EAN con novedades
 					
-					for (e=1; e<keys.length; e++){
-
-						//Asigno el EAN a recorrer
-						var ean = keys[e]
+					if (typeof promo_comercio !== 'undefined' && promo_comercio !== null ){
 						
-						//No debería pasar, pero en caso que el EAN sea nulo, significa que no tengo más registros para procesar y retorno
-						if (ean == null){
-							console.log("Log 3")
-							console.log("2comercio_id:",promo_comercio._id)
-							console.log("No existen artículos para procesar en el comercio: ",comercio._id)
-							return;
-						}
+						for (e=1; e<keys.length; e++){
 
-						console.log("PROCESANDO NUEVO EAN -------------------------------------")
-						
-						//Informo qué EAN estoy procesando
-						console.log("Proceso EAN:",ean)
+							//Asigno el EAN a recorrer
+							var ean = keys[e]
+							
+							//No debería pasar, pero en caso que el EAN sea nulo, significa que no tengo más registros para procesar y retorno
+							if (ean == null){
+								console.log("Log 3")
+								console.log("2comercio_id:",promo_comercio._id)
+								console.log("No existen artículos para procesar en el comercio: ",comercio._id)
+								return;
+							}
 
-						//Imprimo el objeto EAN asignado
-						console.log("EAN valor:",comercio.precios[ean])
+							console.log("PROCESANDO NUEVO EAN -------------------------------------")
+							
+							//Informo qué EAN estoy procesando
+							console.log("Proceso EAN:",ean)
 
-						if (typeof promo_comercio._id !== 'undefined' || promo_comercio._id !== null ){
-						
+							//Imprimo el objeto EAN asignado
+							console.log("EAN valor:",comercio.precios[ean])
+
 							//Asigno las promociones al nuevo EAN:
 							console.log("promo_comercio_id:",promo_comercio._id)
 							comercio.precios[ean].promociones = promo_comercio.promociones
 
 							console.log("Se han guardado las promciones...")
 						}
-
-					}
-
-					console.log("3comercio_id:",comercio._id)
-					if (typeof comercio._id !== 'undefined' || comercio._id !== null){
-		
+			
 						console.log("Grabo promoción:")
 						console.log("comercio_id:",comercio._id)
 					   	db.collection('ultima_snapshot').update({_id:comercio._id},{$set: {precios:comercio.precios}})	
 					   	console.log("He grabado la promoción")
 					}
-				}
-
-				if (typeof comercio == 'undefined' || comercio == null) {
-					return
 				}
 
 			})
