@@ -61,9 +61,9 @@ get_connect.then(function(db){
 
 					if (usuarios[usr_keys[u]] < 1000.00) { var usr_weight = 1 } else
 					if (usuarios[usr_keys[u]] < 10000.00) { var usr_weight = 10 } else
-					if (usuarios[usr_keys[u]] < 25000.00) { var usr_weight = 50 } else
-					if (usuarios[usr_keys[u]] < 100000.00) { var usr_weight = 150 } else
-						{ var usr_weight = 450 }
+					if (usuarios[usr_keys[u]] < 25000.00) { var usr_weight = 150 } else
+					if (usuarios[usr_keys[u]] < 100000.00) { var usr_weight = 1750 } else
+						{ var usr_weight = 14500 }
 
 					if (usuarios[usr_keys[u]] < 1000.00) { var usr_weight_det = "Chango Vacío" } else
 					if (usuarios[usr_keys[u]] < 10000.00) { var usr_weight_det = "Mini Chango" } else
