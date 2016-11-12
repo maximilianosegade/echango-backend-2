@@ -1,6 +1,6 @@
+const dbutils = require('../../util/mongo');
 const hostNovedades = 'webi.certant.com';
 const pathNovedades = '/echango/novedades_subida/_design/_view/_view/_compra_por_dia?descending=true';
-const mongoUrl = 'mongodb://echango_mobile:aprobamos el 22/11@ec2-35-162-193-58.us-west-2.compute.amazonaws.com:38128/echango';
 
 function copiarNovedadesDesdeDbPublicaAPrivada(fechaHoy, fechaHasta){
 
@@ -65,7 +65,7 @@ function persistirNovedadesEnDbPrivada(fechaHoy, novedades){
 		snapshot.compras.push(novedades[i].value);
 	}
 
-	return require('../../util/mongo').insert('compras_hist', snapshot);
+	return dbutils.insert('compras_hist', snapshot);
 }
 
 module.exports = {
