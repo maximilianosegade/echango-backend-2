@@ -4,6 +4,8 @@ module.exports = {
 	backUp: function (id){
 		return obtenerSnapshotEnCurso().then(function(snap){
 			return backupSnapshotEnHistorico(id, snap);
+		}).then(function(){
+			return dbutils.remove('snapshot_en_curso');
 		});
 	}
 }

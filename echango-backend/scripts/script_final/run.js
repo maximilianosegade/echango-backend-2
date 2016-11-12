@@ -1,10 +1,10 @@
 const fechaInicio = new Date();
-/*
+
 const fechaInicioFormateada = fechaInicio.toISOString()
 	.replace(/T/, ' ')
   	.replace(/\..+/, '');
-*/
-const fechaInicioFormateada = '2016-11-12 06:30:08';
+
+//const fechaInicioFormateada = '2016-11-12 06:30:08';
 
 (function run(){
 	log('Iniciando script de gestion de precios.');
