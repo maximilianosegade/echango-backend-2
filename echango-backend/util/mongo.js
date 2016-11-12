@@ -129,5 +129,22 @@ dbutils.update = function(collectionName, s1, s2, s3){
 
 }
 
+dbutils.insert = function(collectionName, docs){
+  return dbutils.connect().then(function(db){   
+    dbTrack = db;   
+
+    var collection = bluebird.promisifyAll(
+        db.collection(collectionName));
+
+    return collection.insertAsync(docs);
+  }).then(function(res){
+    dbutils.cleanDB(dbTrack);
+    return res;
+  }).catch(function(err){
+    dbutils.cleanDB(dbTrack);
+    return Promise.reject(err);
+  });
+}
+
 module.exports = dbutils;
 //dbutils.findComerciosCercanos(-34.602232,-58.411533,0)
