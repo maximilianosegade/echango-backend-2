@@ -1,4 +1,10 @@
-const fechaInicio = '2016-11-12 06:30:08';
+const fechaInicio = new Date();
+/*
+const fechaInicioFormateada = fechaInicio.toISOString()
+	.replace(/T/, ' ')
+  	.replace(/\..+/, '');
+*/
+const fechaInicioFormateada = '2016-11-12 06:30:08';
 
 (function run(){
 	log('Iniciando script de gestion de precios.');
@@ -6,7 +12,7 @@ const fechaInicio = '2016-11-12 06:30:08';
 	logSeparator();
 	
 	var paso1 = require('./01_price_management').
-		copiarNovedadesDesdeDbPublicaAPrivada(fechaInicio);
+		copiarNovedadesDesdeDbPublicaAPrivada(fechaInicioFormateada);
 	
 	paso1.then(function(){
 
@@ -15,7 +21,7 @@ const fechaInicio = '2016-11-12 06:30:08';
 		log('Iniciando paso 2 - Construir snapshot en curso.');
 		logSeparator();
 		return require('./10_construir_snapshot_en_curso').
-			construirSnapshotEnCurso(fechaInicio);
+			construirSnapshotEnCurso(fechaInicioFormateada);
 
 	}).then(function(){
 
@@ -54,14 +60,33 @@ const fechaInicio = '2016-11-12 06:30:08';
 		logSeparator();
 		
 		return require('./50_backup_snapshot_en_curso').
-			backUp(fechaInicio);
+			backUp(fechaInicioFormateada);
 
 	}).then(function(){
 
 		logSeparator();
 		log('Paso 6 finalizado.');
+		log('Iniciando paso 7 - Cargar promociones.');
 		logSeparator();
-		//log('Iniciando paso 6 - Backup de snapshot en curso.');
+		
+		return Promise.resolve();
+
+	}).then(function(){
+
+		logSeparator();
+		log('Paso 7 finalizado.');
+		log('Iniciando paso 8 - Replicar ultimo snapshot '+
+			'consolidado en DB publica.');
+		logSeparator();
+		
+		return require('./70_replicar_ultimo_snapshot_en_db_publica').
+			replicarUltimoSnapshotEnDbPublica();
+	
+	}).then(function(){
+
+		logSeparator();
+		log('Paso 8 finalizado.');
+		logDuracionTotal();
 
 	}).catch(function(err){
 		log('Fallo la ejecucion del script. ', err);
@@ -71,6 +96,11 @@ const fechaInicio = '2016-11-12 06:30:08';
 
 function log(msg){
 	console.log(new Date().toISOString(), ' - ', msg);
+}
+
+function logDuracionTotal(){
+	duracionEnSegundos = ((new Date()-fechaInicio)/1000).toFixed(0);
+	log('Duracion total del script (segundos): ' + duracionEnSegundos);
 }
 
 function logSeparator(){
