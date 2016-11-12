@@ -124,9 +124,9 @@ module.exports = {
 								
 								if (novedades[i].score < 1000.00) { var nov_weight = 1 } else
 								if (novedades[i].score < 10000.00) { var nov_weight = 10 } else
-								if (novedades[i].score < 25000.00) { var nov_weight = 50 } else
-								if (novedades[i].score < 100000.00) { var nov_weight = 150 } else
-								{ var nov_weight = 450 }
+								if (novedades[i].score < 25000.00) { var nov_weight = 150 } else
+								if (novedades[i].score < 100000.00) { var nov_weight = 1750 } else
+								{ var nov_weight = 14500 }
 
 								console.log("Precio de novedad N°",novedad_nro,"= $",novedades[i].precio)
 								console.log("Peso de novedad N°",novedad_nro,"= ",nov_weight)
@@ -137,7 +137,7 @@ module.exports = {
 								if (excluir_precio_base == 0){
 
 									//SUPER CHANGO
-									if (nov_weight == 450) {
+									if (nov_weight == 14500) {
 
 										//Calculo el porcentaje de diferencia con el precio base para la novedad del usuario
 										if (novedades[i].precio >= comercio[ean].precio_base) {
@@ -156,7 +156,7 @@ module.exports = {
 									}
 
 									//CHANGO LLENO
-									if (nov_weight == 150) {
+									if (nov_weight == 1750) {
 
 										cant_chango_lleno++
 										prc_chango_lleno += parseFloat(novedades[i].precio)
@@ -185,7 +185,7 @@ module.exports = {
 									}
 
 									//CHANGO
-									if (nov_weight == 50) {
+									if (nov_weight == 150) {
 
 										cant_chango++
 										prc_chango += parseFloat(novedades[i].precio)
