@@ -146,5 +146,22 @@ dbutils.insert = function(collectionName, docs){
   });
 }
 
+dbutils.remove = function(collectionName, selector){
+  return dbutils.connect().then(function(db){   
+    dbTrack = db;   
+
+    var collection = bluebird.promisifyAll(
+        db.collection(collectionName));
+
+    return collection.removeAsync(selector);
+  }).then(function(res){
+    dbutils.cleanDB(dbTrack);
+    return Promise.resolve();
+  }).catch(function(err){
+    dbutils.cleanDB(dbTrack);
+    return Promise.reject(err);
+  }); 
+}
+
 module.exports = dbutils;
 //dbutils.findComerciosCercanos(-34.602232,-58.411533,0)
