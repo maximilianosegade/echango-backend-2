@@ -219,13 +219,15 @@ module.exports = {
 
 									console.log("2 - excluir_precio_base =",excluir_precio_base)
 
-									console.log("precio_novedad_num ANTES:",precio_novedad_num)
-									precio_novedad_num += novedades[i].precio * nov_weight
-									console.log("precio_novedad_num DESPUES:",precio_novedad_num)
-									
-									console.log("precio_novedad_denom ANTES:",precio_novedad_denom)
-									precio_novedad_denom += parseFloat(nov_weight)
-									console.log("precio_novedad_denom DESPUES:",precio_novedad_denom)
+									if (novedades[i].score >= 0) {
+										console.log("precio_novedad_num ANTES:",precio_novedad_num)
+										precio_novedad_num += novedades[i].precio * nov_weight
+										console.log("precio_novedad_num DESPUES:",precio_novedad_num)
+										
+										console.log("precio_novedad_denom ANTES:",precio_novedad_denom)
+										precio_novedad_denom += parseFloat(nov_weight)
+										console.log("precio_novedad_denom DESPUES:",precio_novedad_denom)
+									}
 								}
 
 								console.log("3 - excluir_precio_base =",excluir_precio_base)
