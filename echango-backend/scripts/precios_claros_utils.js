@@ -79,7 +79,9 @@ var obtenerPreciosPorComercio = function(idComercio, productos, delay){
         console.log(idComercio, ' => ' , productos_relevados, '/', total);
         
         obtenerPreciosPorProductoYComercio(prod.ean, idComercio).then(function(precio){
-          precios.precios[prod.ean] = precio;
+          precios.precios[prod.ean] = {
+            precio: precio
+          }
           if (productos_relevados == total){            
             resolve(precios);
           }

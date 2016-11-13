@@ -94,7 +94,7 @@ module.exports = {
 						for (j=0; j<preciosBase.length; j++){
 												
 							if (preciosBase[j]._id === comercios[i]){
-								snapComercios[comercios[i]][prop].precio_base = preciosBase[j].precios[prop];
+								snapComercios[comercios[i]][prop].precio_base = preciosBase[j].precios[prop].precio;
 								break;
 							}
 						}

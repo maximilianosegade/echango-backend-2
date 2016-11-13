@@ -47,13 +47,13 @@ function impactarNovedades(novedades){
 					modificado = true;
 
 					precioOld = ultimoSnapshotComercio.precios[ean];
-					ultimoSnapshotComercio.precios[ean] =
+					ultimoSnapshotComercio.precios[ean].precio =
 						novedadesComercio[ean].precio_novedad;					
 
 					console.log('Se actualizo ean: ', ean,
 						' en comercio: ', novedadesComercio._id,
 						' precio: ', precioOld, ' => ',
-						ultimoSnapshotComercio.precios[ean]);
+						ultimoSnapshotComercio.precios[ean].precio);
 				}
 
 			}
