@@ -125,6 +125,8 @@ module.exports = {
 			console.log('Snapshot generado: ', JSON.stringify(insertDocs));
 
 			return dbutils.insert('snapshot_en_curso', insertDocs);
+		}).catch(function(err){
+			return Promise.reject(err);
 		});
 
 	}

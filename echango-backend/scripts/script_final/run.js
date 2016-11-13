@@ -69,7 +69,8 @@ const fechaInicioFormateada = fechaInicio.toISOString()
 		log('Iniciando paso 7 - Cargar promociones.');
 		logSeparator();
 		
-		return Promise.resolve();
+		return require('./60_promotion_management').
+			actualizarPromociones();
 
 	}).then(function(){
 

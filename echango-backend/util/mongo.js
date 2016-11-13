@@ -99,7 +99,9 @@ dbutils.find = function(collectionName, selector){
 
     	return collection.find(selector);
   	}).then(function(res){
-  		var data = res.toArray();
+      return res.toArray();
+    }).then(function(res){  		
+      var data = res;
   		dbutils.cleanDB(dbTrack);
     	return data;
   	}).catch(function(err){
