@@ -47,7 +47,7 @@ get_connect.then(function(db){
 					return Promise.reject(err);
 				}
 
-				if (comercio == null) {
+				if (!comercio) {
 
 					console.log("No existen registros por precesar.")
 					console.log("Se han procesado las novedades y generado el último snapshot.")
@@ -70,7 +70,7 @@ get_connect.then(function(db){
 
 					var promo_comercio = _.findWhere(promos,{_id:cadena})
 
-					if (promo_comercio == null ){
+					if (!promo_comercio){
 
 						console.log("No hay promociones para comercio: ", comercio._id)
 
@@ -82,7 +82,7 @@ get_connect.then(function(db){
 						//Arranco de la posición "e=1" porque la posición 0 contiene el _id del comercio
 						//Comienzo a recorrer todos los EAN con novedades
 						
-						for (e=1; e<keys.length; e++){
+						for (e=0; e<keys.length; e++){
 
 							//Asigno el EAN a recorrer
 							var ean = keys[e]
