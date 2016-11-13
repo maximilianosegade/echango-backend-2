@@ -24,14 +24,14 @@ module.exports = {
 				var search_snap = new Promise(function(resolve2,reject){
 
 					var mySnap = db.collection('snapshot_en_curso').find()
-					console.log("Devuelvo conexión a DB y cursor")
+					//console.log("Devuelvo conexión a DB y cursor")
 					resolve2(mySnap);
 				});
 
 				search_snap.then(function(mySnap){
 					
 					//Por cada documento de la snapshot en curso (sucursal), verifico cada EAN y calculo el precio_novedad
-					console.log("Por procesar novedades de comercios...")
+					//console.log("Por procesar novedades de comercios...")
 
 					var v_cant_suc = 0	
 					var usuarios = []
@@ -49,17 +49,14 @@ module.exports = {
 
 							console.log("No existen registros por precesar.")
 							console.log("Se procesaron: ",v_cant_suc," sucursales.")
-							console.log("AHORA SI GRABO")//,usuarios)
+							//console.log("AHORA SI GRABO")//,usuarios)
 
 							var usr_keys = Object.keys(usuarios)
 
-							console.log("Largo:",usr_keys.length)
-							console.log("Keys:",usr_keys)
-
 							for (u=0; u<usr_keys.length; u++) {
 
-								console.log("Grabo usuario: ",usr_keys[u])
-								console.log("Su score es: ",usuarios[usr_keys[u]])
+								//console.log("Grabo usuario: ",usr_keys[u])
+								//console.log("Su score es: ",usuarios[usr_keys[u]])
 
 								if (usuarios[usr_keys[u]] < 1000.00) { var usr_weight = 1 } else
 								if (usuarios[usr_keys[u]] < 10000.00) { var usr_weight = 10 } else
@@ -76,15 +73,15 @@ module.exports = {
 								db.collection('usuarios').update({_id:usr_keys[u]},{$set: {score:usuarios[usr_keys[u]], weight:usr_weight,chango_type: usr_weight_det}})
 							}
 							
-							console.log("Se han procesado las novedades y generado el último snapshot.")
-							console.log("Cerrando conexión a base de datos...")
+							//console.log("Se han procesado las novedades y generado el último snapshot.")
+							//console.log("Cerrando conexión a base de datos...")
 							db.close()
 							resolve();
 						} else {
 
 							//Informo el comercio a procesar
-							console.log("PROCESANDO NUEVO COMERCIO -------------------------------------")
-							console.log("Procesando comercio:",comercio._id)					
+							//console.log("PROCESANDO NUEVO COMERCIO -------------------------------------")
+							//console.log("Procesando comercio:",comercio._id)					
 							
 							//Obtengo un array con todos los _id de los EAN que tienen novedades para el comercio
 							var keys = Object.keys(comercio)
@@ -101,27 +98,27 @@ module.exports = {
 								
 								//No debería pasar, pero en caso que el EAN sea nulo, significa que no tengo más registros para procesar y retorno
 								if (ean == null){
-									console.log("No existen artículos para procesar en el comercio: ",comercio._id)
+									//console.log("No existen artículos para procesar en el comercio: ",comercio._id)
 									return;
 								}
 
-								console.log("PROCESANDO NUEVO EAN -------------------------------------")
+								//console.log("PROCESANDO NUEVO EAN -------------------------------------")
 								
 								//Informo qué EAN estoy procesando
-								console.log("Proceso EAN:",ean)
+								//console.log("Proceso EAN:",ean)
 
 								//Imprimo el objeto EAN asignado
-								console.log("EAN:",comercio[ean])
+								//console.log("EAN:",comercio[ean])
 
 								//Muestro el precio novedad definido para dicho EAN en "Define_price"
-								console.log("Precio guardado: $",comercio[ean].precio_novedad)
+								//console.log("Precio guardado: $",comercio[ean].precio_novedad)
 								var nvd = comercio[ean].precio_novedad
 
 								//Asigno el array de novedades a la variable novedades, la cual comienzo a recorrer desde la primer novedad
 								var novedades = comercio[ean].novedades
 
 								//Informo la cantidad de novedades para el EAN
-								console.log("Se procesarán ",novedades.length," novedades...")
+								//console.log("Se procesarán ",novedades.length," novedades...")
 								
 								for (i=0; i<novedades.length; i++){
 									
@@ -130,13 +127,13 @@ module.exports = {
 
 									console.log("Proceso usuario de novedad N°",novedad_nro)
 									
-									console.log("Usuario: ",novedades[i].usuario)
+									//console.log("Usuario: ",novedades[i].usuario)
 									var usr = novedades[i].usuario
 
-									console.log("Precio informado por el usuario: $",novedades[i].precio)
+									//console.log("Precio informado por el usuario: $",novedades[i].precio)
 									var prc = novedades[i].precio
 
-									console.log("El usuario informó el precio con un score de: ",novedades[i].score)
+									//console.log("El usuario informó el precio con un score de: ",novedades[i].score)
 									var scr = novedades[i].score
 
 									//Verifico si el usuario existe en el array de usuarios de novedades
@@ -146,17 +143,17 @@ module.exports = {
 
 									if (usr_exist == true) {
 										
-										console.log("Usuario existente:",usr)
+										//console.log("Usuario existente:",usr)
 
 									} else {
 
 										usuarios[usr]=scr
 
-										console.log("Se ha agregado un usuario a la lista: ",usr)
-										console.log("Imprimo lista actualizada: ", usuarios)
+										//console.log("Se ha agregado un usuario a la lista: ",usr)
+										//console.log("Imprimo lista actualizada: ", usuarios)
 									}
 
-									console.log("El usuario tiene actualmente un score =",usuarios[usr])
+									//console.log("El usuario tiene actualmente un score =",usuarios[usr])
 
 									//Calculo el porcentaje de diferencia con respecto a la novedad calculada
 									if (nvd >= prc) {
@@ -167,7 +164,7 @@ module.exports = {
 
 									var porcentaje = parseFloat((diferencia / nvd) * 100).toFixed(2)
 
-									console.log("El porcentaje de desvío es: %",porcentaje)
+									//console.log("El porcentaje de desvío es: %",porcentaje)
 
 									if (porcentaje <= 1.00) { var add_score = 100 } else
 									if (porcentaje <= 3.00) { var add_score = 70 } else
@@ -184,7 +181,7 @@ module.exports = {
 									usuarios[usr] = parseFloat(usuarios[usr]) + parseFloat(add_score)
 
 									console.log("Se guardó el score final: ",usuarios[usr])	
-									console.log("Imprimo lista actualizada: ", usuarios)				
+									//console.log("Imprimo lista actualizada: ", usuarios)				
 								}	
 							}
 						}

@@ -24,14 +24,14 @@ module.exports = {
 				var search_snap = new Promise(function(resolve2,reject){
 
 					var mySnap = db.collection('snapshot_en_curso').find()
-					console.log("Devuelvo conexión a DB y cursor")
+					//console.log("Devuelvo conexión a DB y cursor")
 					resolve2(mySnap);
 				})
 
 				search_snap.then(function(mySnap){
 					
 					//Por cada documento de la snapshot en curso (sucursal), verifico cada EAN y calculo el precio_novedad
-					console.log("Por procesar novedades de comercios...")
+					//console.log("Por procesar novedades de comercios...")
 
 					//Pocesa el "doc:comercio" y en el último each donde "doc:comercio" es nulo, termina de procesar
 					mySnap.each(function(err,comercio){
@@ -42,17 +42,17 @@ module.exports = {
 
 						if (comercio == null) {
 
-							console.log("No existen registros por precesar.")
-							console.log("Se han procesado las novedades y generado el último snapshot.")
-							console.log("Cerrando conexión a base de datos...")
+							//console.log("No existen registros por precesar.")
+							//console.log("Se han procesado las novedades y generado el último snapshot.")
+							//console.log("Cerrando conexión a base de datos...")
 							db.close()
 							resolve();
 
 						} else {
 
 							//Informo el comercio a procesar
-							console.log("PROCESANDO NUEVO COMERCIO -------------------------------------")
-							console.log("Procesando comercio:",comercio._id)
+							//console.log("PROCESANDO NUEVO COMERCIO -------------------------------------")
+							//console.log("Procesando comercio:",comercio._id)
 							
 							//Obtengo un array con todos los _id de los EAN que tienen novedades para el comercio
 							var keys = Object.keys(comercio)
@@ -70,24 +70,24 @@ module.exports = {
 								
 								//No debería pasar, pero en caso que el EAN sea nulo, significa que no tengo más registros para procesar y retorno
 								if (ean == null){
-									console.log("No existen artículos para procesar en el comercio: ",comercio._id)
+									//console.log("No existen artículos para procesar en el comercio: ",comercio._id)
 									return;
 								}
 
-								console.log("PROCESANDO NUEVO EAN -------------------------------------")
+								//console.log("PROCESANDO NUEVO EAN -------------------------------------")
 								
 								//Informo qué EAN estoy procesando
-								console.log("Proceso EAN:",ean)
+								//console.log("Proceso EAN:",ean)
 
 								//Imprimo el objeto EAN asignado
-								console.log("EAN:",comercio[ean])
+								//console.log("EAN:",comercio[ean])
 								
 								precio_base = comercio[ean].precio_base
-								console.log("Precio base: $",precio_base)
+								//console.log("Precio base: $",precio_base)
 
 								var novedades = comercio[ean].novedades
-								console.log("Imprimo novedades del artículo:")
-								console.log(novedades)
+								//console.log("Imprimo novedades del artículo:")
+								//console.log(novedades)
 								
 								var novedades_nro = 0
 
@@ -103,10 +103,10 @@ module.exports = {
 								if (comercio[ean].precio_base) {
 
 									precio_novedad_num = precio_base * precio_base_weight
-									console.log("precio_novedad_num = ",precio_novedad_num)
+									//console.log("precio_novedad_num = ",precio_novedad_num)
 
 									precio_novedad_denom = precio_base_weight
-									console.log("precio_novedad_denom = ",precio_novedad_denom)
+									//console.log("precio_novedad_denom = ",precio_novedad_denom)
 
 									var excluir_precio_base = 0
 									//En caso de existir el precio base, tengo que analizar si lo incluyo
@@ -115,10 +115,10 @@ module.exports = {
 
 									var excluir_precio_base = 1
 									//Excluyo el análisis del precio base
-									console.log("Artículo sin precio base.")
+									//console.log("Artículo sin precio base.")
 								}
 									
-								console.log("1 - excluir_precio_base =",excluir_precio_base)
+								//console.log("1 - excluir_precio_base =",excluir_precio_base)
 
 								for (i=0; i<novedades.length; i++){
 
@@ -130,8 +130,8 @@ module.exports = {
 									if (novedades[i].score < 100000.00) { var nov_weight = 1750 } else
 									{ var nov_weight = 14500 }
 
-									console.log("Precio de novedad N°",novedad_nro,"= $",novedades[i].precio)
-									console.log("Peso de novedad N°",novedad_nro,"= ",nov_weight)
+									//console.log("Precio de novedad N°",novedad_nro,"= $",novedades[i].precio)
+									//console.log("Peso de novedad N°",novedad_nro,"= ",nov_weight)
 
 
 
@@ -217,20 +217,18 @@ module.exports = {
 
 									}
 
-									console.log("2 - excluir_precio_base =",excluir_precio_base)
+									//console.log("2 - excluir_precio_base =",excluir_precio_base)
 
 									if (novedades[i].score >= 0) {
-										console.log("precio_novedad_num ANTES:",precio_novedad_num)
+										//console.log("precio_novedad_num ANTES:",precio_novedad_num)
 										precio_novedad_num += novedades[i].precio * nov_weight
-										console.log("precio_novedad_num DESPUES:",precio_novedad_num)
+										//console.log("precio_novedad_num DESPUES:",precio_novedad_num)
 										
-										console.log("precio_novedad_denom ANTES:",precio_novedad_denom)
+										//console.log("precio_novedad_denom ANTES:",precio_novedad_denom)
 										precio_novedad_denom += parseFloat(nov_weight)
-										console.log("precio_novedad_denom DESPUES:",precio_novedad_denom)
+										//console.log("precio_novedad_denom DESPUES:",precio_novedad_denom)
 									}
 								}
-
-								console.log("3 - excluir_precio_base =",excluir_precio_base)
 								
 								// Si el flag está en 1 se excluye el precio base
 								if (excluir_precio_base == 1) {
@@ -238,7 +236,6 @@ module.exports = {
 									//Para excluir el precio base, el mismo debe haber existido
 									if (comercio[ean].precio_base) {
 
-										console.log("Se excluirá el precio base")
 										precio_novedad_num += -(precio_base * precio_base_weight)
 
 										precio_novedad_denom += -precio_base_weight
@@ -247,17 +244,12 @@ module.exports = {
 
 								}
 
-								console.log("4 - excluir_precio_base =",excluir_precio_base)
-								console.log("Voy a dividir: $",precio_novedad_num," por $",precio_novedad_denom)
-
 								var precio_novedad = parseFloat(precio_novedad_num / precio_novedad_denom).toFixed(2)
 
 								console.log("Precio novedad: $",precio_novedad)
 								comercio[ean].precio_novedad = precio_novedad
-								console.log("Precio guardado: $",comercio[ean].precio_novedad);
 						   }
 
-						   console.log("Grabo precio_novedad:",comercio)
 						   db.collection('snapshot_en_curso').update({_id:comercio._id},comercio)
 						}
 					})
