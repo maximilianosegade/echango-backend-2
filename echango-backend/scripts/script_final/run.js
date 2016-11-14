@@ -1,10 +1,11 @@
 const fechaInicio = new Date();
-
+const moment = require('moment');
+/*
 const fechaInicioFormateada = fechaInicio.toISOString()
 	.replace(/T/, ' ')
   	.replace(/\..+/, '');
-
-//const fechaInicioFormateada = '2016-11-12 06:30:08';
+*/
+const fechaInicioFormateada = moment().format().replace(/T/, ' ').replace(/-\d\d:\d\d/, '');
 
 (function run(){
 	log('Iniciando script de gestion de precios.');
@@ -96,7 +97,7 @@ const fechaInicioFormateada = fechaInicio.toISOString()
 })();
 
 function log(msg){
-	console.log(new Date().toISOString(), ' - ', msg);
+	console.log(new Date()+ ' - '+ msg);
 }
 
 function logDuracionTotal(){

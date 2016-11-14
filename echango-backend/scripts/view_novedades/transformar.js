@@ -1,25 +1,30 @@
-var fs = require('fs');
-var compraOriginal = JSON.parse(fs.readFileSync('compra_test.js'));
+function view(doc) {
 
-var f = function (doc) {
-  if (doc.fecha_compra) emit(doc.fecha_compra, {usuario: doc.usuario, comercio: doc.comercio, fecha_compra: doc.fecha_compra, detalle_compra: doc.detalle_compra});
-	var compraModificada = {
-	'usuario': compraOriginal.usuario,
-	'comercio': compraOriginal.comercio._id,
-	'fecha_compra': compraOriginal.fecha,
-	'detalle_compra': {
-	'articulos': []
-	}
+  	if (doc.fecha) {
+
+		var compraModificada = {
+			'usuario': doc.usuario,
+			'comercio': doc.comercio._id,
+			'fecha_compra': doc.fecha,
+			'detalle_compra': {
+			'articulos': []
+			}
+		}
+
+		for (var i=0; i<doc.productos.length; i++){
+			compraModificada.detalle_compra.articulos.push({
+				'ean': doc.productos[i].ean,
+				'precio_lista': doc.productos[i].precio_lista
+			});
+		}
+
 	}
 
-	for (var i=0; i<compraOriginal.productos.length; i++){
-	compraModificada.detalle_compra.articulos.push({
-	'ean': compraOriginal.productos[i].ean,
-	'precio_lista': compraOriginal.productos[i].precio_lista
-	});
-	}
+  	emit(doc.fecha_compra, compraModificada);
 }
 
-
+console.log(view.toString())
+var fs = require('fs')
+var compraOriginal = JSON.parse(fs.readFileSync('compra_test.js'))
 console.log('Compra modificada:');
-console.log(JSON.stringify(compraModificada));
+console.log(JSON.stringify(view(compraOriginal)));
