@@ -106,7 +106,7 @@ var removePromociones = function (req, res, next) {
     var i
 
     for(i=0; i<productos.length; i++){
-      if (promociones){
+      if (promociones.length){
         var promocionesDepuradas = []
         var j
 
