@@ -6,6 +6,7 @@ const fechaInicioFormateada = fechaInicio.toISOString()
   	.replace(/\..+/, '');
 */
 const fechaInicioFormateada = moment().format().replace(/T/, ' ').replace(/-\d\d:\d\d/, '');
+const fechaHastaNovedades = moment().subtract(5, 'days').format().replace(/T/, ' ').replace(/-\d\d:\d\d/, '');
 
 (function run(){
 	log('Iniciando script de gestion de precios.');
@@ -13,7 +14,7 @@ const fechaInicioFormateada = moment().format().replace(/T/, ' ').replace(/-\d\d
 	logSeparator();
 	
 	var paso1 = require('./01_price_management').
-		copiarNovedadesDesdeDbPublicaAPrivada(fechaInicioFormateada);
+		copiarNovedadesDesdeDbPublicaAPrivada(fechaInicioFormateada, fechaHastaNovedades);
 	
 	paso1.then(function(){
 
