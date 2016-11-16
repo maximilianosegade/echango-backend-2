@@ -1,0 +1,19 @@
+head
+  link(
+    rel="stylesheet"
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    crossorigin="anonymous")
+  link(
+    rel="stylesheet"
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+    crossorigin="anonymous")
+body   
+  script(src="http://code.jquery.com/jquery.js")
+  each comercio in comercios
+    h1= comercio.id
+    table(class="table table-bordered")
+      each articulo in comercio.articulos
+        tr
+          td= articulo.ean
+          - var promos = JSON.stringify(articulo.promociones)
+          td= promos
