@@ -1,0 +1,11 @@
+body   
+  form(action="http://ec2-35-162-193-58.us-west-2.compute.amazonaws.com:3000/promociones/add", method="post")
+    p ID de comercios (separados por ;)
+    input(type="text", name="comercios")
+    p EAN de productos (separados por ;)
+    input(type="text", name="productos")
+    p Array de promociones. Ej.:
+    p
+      code [{"banco":0,"plastico":6,"tarjeta":0,"porcentaje":0.15,"cantidad":0,"acumulable":0,"dias":["viernes"]},{"banco":0,"plastico":8,"tarjeta":0,"porcentaje":0.15,"cantidad":0,"acumulable":0,"dias":["viernes"]},{"banco":0,"plastico":10,"tarjeta":0,"porcentaje":0.15,"cantidad":0,"acumulable":0,"dias":["viernes"]}]
+    textarea(name="promociones",rows="20" cols="80")
+    input(type="submit")

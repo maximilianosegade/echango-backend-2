@@ -49,13 +49,18 @@ var promocionesListado = function (req, res, next) {
       })
     }, Promise.resolve())
   }).then(function(resp){
-    //res.setHeader('Content-Type', 'application/json');
-    //res.end(JSON.stringify(comercios));
     res.render('promociones', { comercios: comercios });
   }).catch(function(err){
     next(err);
   });
 
+}
+
+/* 
+ * Agregar promociones (formulario)
+ */
+var addPromocionesForm = function (req, res, next) {
+  res.render('promociones_add');
 }
 
 /* 
@@ -82,8 +87,7 @@ var addPromociones = function (req, res, next) {
 
       return preciosPorComercio.insertAsync(comercio)
     }).then(function(resp){
-      console.log('Se insertaron las promociones en ', idComercio)
-      res.end();
+      res.end('Se insertaron OK.');
     }).catch(function(err){
       next(err);
     });
@@ -135,6 +139,7 @@ var removePromociones = function (req, res, next) {
 }
 
 router.get('/all', promocionesListado);
+router.get('/add', addPromocionesForm);
 router.post('/add', addPromociones);
 router.get('/remove', removePromociones);
 
