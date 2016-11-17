@@ -10,7 +10,8 @@ head
 body   
   script(src="http://code.jquery.com/jquery.js")
   each comercio in comercios
-    h1= comercio.id
+    strong= comercio.cadena + " - " + comercio.id
+    p= comercio.direccion
     table(class="table table-bordered")
       each articulo in comercio.articulos
         tr

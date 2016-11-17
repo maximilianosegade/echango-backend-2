@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var dbPublicaPreciosActualizados = 'precios_por_comercio';
+var dbPublicaComercios = 'comercios';
 var nano     = require('nano')({
   url: 'https://webi.certant.com/echango',
   parseUrl: false})
@@ -10,6 +11,7 @@ var bluebird = require('bluebird');
 
 bluebird.promisifyAll(nano);  
 var preciosPorComercio = bluebird.promisifyAll(nano.use(dbPublicaPreciosActualizados));
+var comerciosDB = bluebird.promisifyAll(nano.use(dbPublicaComercios));
 
 /* 
  * Listar todas las promociones
@@ -49,6 +51,14 @@ var promocionesListado = function (req, res, next) {
       })
     }, Promise.resolve())
   }).then(function(resp){
+    return comercios.reduce(function(seq, comercio, idx){
+      return comerciosDB.getAsync(comercio.id).then(function(com){
+        comercios[idx].cadena = com.cadena
+        comercios[idx].direccion = com.direccion
+        return Promise.resolve()
+      })
+    }, Promise.resolve())
+  }).then(function(){
     res.render('promociones', { comercios: comercios });
   }).catch(function(err){
     next(err);
