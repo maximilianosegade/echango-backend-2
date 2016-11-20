@@ -71,8 +71,9 @@ const fechaHastaNovedades = moment().subtract(5, 'days').format().replace(/T/, '
 		log('Iniciando paso 7 - Cargar promociones.');
 		logSeparator();
 		
-		return require('./60_promotion_management').
-			actualizarPromociones();
+		//return require('./60_promotion_management').
+		//	actualizarPromociones();
+		return Promise.resolve();
 
 	}).then(function(){
 

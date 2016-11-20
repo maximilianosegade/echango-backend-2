@@ -38,6 +38,9 @@ function impactarNovedades(novedades){
 	console.log('Se van a impactar las novedades en la DB publica Couch...');
 
 	novedades.forEach(function(novedadesComercio){
+		for (ean in novedadesComercio.precios){
+			novedadesComercio.precios[ean].promociones = []
+		}
 
 		console.log('[', novedadesComercio._id, '] Procesando snapshot ...');
 		

@@ -1,6 +1,6 @@
 // Script config.
 const hostname = '8kdx6rx8h4.execute-api.us-east-1.amazonaws.com'
-const key = 'X2Y5jwkqYb5RlojFejBXr3PL1fKaja1e4bMGZz7d'
+const key = 'zIgFou7Gta7g87VFGL9dZ4BEEs19gNYS1SOQZt96'
 const headers = {
   'Accept':'application/json, text/plain, */*',
   'Accept-Encoding':'gzip, deflate, sdch, br',
