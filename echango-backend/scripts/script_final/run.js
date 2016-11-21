@@ -51,7 +51,8 @@ const fechaHastaNovedades = moment().subtract(5, 'days').format().replace(/T/, '
 			'con precios de novedades.');
 		logSeparator();
 		
-		return require('./40_actualizar_ultimo_snapshot').
+		//return require('./40_actualizar_ultimo_snapshot').
+		return require('./41_actualizar_ultimo_snapshot').
 			actualizarUltimaSnapshot();
 
 	}).then(function(){
