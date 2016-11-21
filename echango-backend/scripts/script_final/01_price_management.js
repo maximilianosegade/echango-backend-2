@@ -25,7 +25,7 @@ module.exports = {
 			console.log('Se obtuvieron las novedades de precios.');
 			console.log('Se va a persistir el snapshot en historico...');
 			return persistirNovedadesEnDbPrivada(fechaHoy, novedades);
-		}).then(function(){
+/*		}).then(function(){
 			console.log('Se van a borrar los doc con ID: ', idNovedades)
 			return idNovedades.reduce(function(sequence, id) {
 			  return sequence.then(function() {
@@ -33,7 +33,7 @@ module.exports = {
 			  }).then(function(doc){
 			  	dbNovedades.destroyAsync(doc._id, doc._rev);
 			  })
-			}, Promise.resolve());
+			}, Promise.resolve());*/
 		}).then(function(result){
 			console.log('Se ha persistido el snapshot en historico.');
 			return Promise.resolve();
