@@ -20,7 +20,7 @@ function view(doc) {
 
 	}
 
-  	emit(doc.fecha_compra, compraModificada);
+  	emit(doc.fecha, compraModificada);
 }
 
 console.log(view.toString())
